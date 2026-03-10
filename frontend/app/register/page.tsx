@@ -1,3 +1,4 @@
+import './register.css'
 export default function RegisterPage() {
   return (
     <div className="register-page">

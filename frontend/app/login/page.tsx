@@ -1,4 +1,3 @@
-import './register.css'
 import './login.css'
 export default function page() {
   return (
