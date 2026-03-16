@@ -1,5 +1,40 @@
+'use client'
 import './register.css'
+import { useRouter } from 'next/navigation'
 export default function RegisterPage() {
+
+  const router = useRouter();
+
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+    e.preventDefault()
+
+    const formData = new FormData(e.currentTarget)
+    const name = formData.get('name')
+    const lastName = formData.get('lastName')
+    const email = formData.get('email')
+    const tel = formData.get('tel')
+    const password = formData.get('password')
+    const confirmPassword = formData.get('comfirmPassword')
+
+    if (password != confirmPassword) {
+      return;
+    }
+    const response = await fetch('http://localhost:5000/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: name,
+        lastName: lastName,
+        email: email,
+        tel: tel,
+        password: password
+      }),
+    })
+    if (response.ok) {
+      router.push('/home')
+    }
+  }
+
   return (
     <div className="register-page">
       <div className="register-card">
@@ -10,11 +45,12 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <form className="register-form">
+        <form className="register-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label">Nombre(s) *</label>
             <input
               type="text"
+              name='name'
               placeholder="Ej. Juan Adolfo"
               className="form-input"
               required
@@ -25,6 +61,7 @@ export default function RegisterPage() {
             <label className="form-label">Apellidos *</label>
             <input
               type="text"
+              name='lastName'
               placeholder="Ej. Pérez Flores"
               className="form-input"
               required
@@ -35,6 +72,7 @@ export default function RegisterPage() {
             <label className="form-label">Correo Electrónico *</label>
             <input
               type="email"
+              name='email'
               placeholder="usuario@mail.com"
               className="form-input"
               required
@@ -45,6 +83,7 @@ export default function RegisterPage() {
             <label className="form-label">Teléfono</label>
             <input
               type="tel"
+              name='tel'
               placeholder="555-0000"
               className="form-input"
             />
@@ -54,6 +93,7 @@ export default function RegisterPage() {
             <label className="form-label">Contraseña *</label>
             <input
               type="password"
+              name='password'
               placeholder="Mínimo 6 caracteres"
               className="form-input"
               minLength={6}
@@ -65,6 +105,7 @@ export default function RegisterPage() {
             <label className="form-label">Confirmar Contraseña *</label>
             <input
               type="password"
+              name='comfirmPassword'
               placeholder="Repita su contraseña"
               className="form-input"
               required

@@ -1,11 +1,19 @@
-require('dotenv').config()
-const cors = require('cors')
-const express = require('express')
-const jwt = require('jsonwebtoken')
-const cookieParser = require('cookie-parser')
-const appointmentsRouter = require('./routes/appointmens')
-const app = express()
+import dotenv from "dotenv";
+import cors from "cors";
+import express from "express";
+import jwt from "jsonwebtoken";
+import cookieParser from "cookie-parser";
+import bcrypt from "bcrypt";
+import appointmentsRouter from "./routes/appointmens.js";
 
+dotenv.config();
+
+const app = express();
+
+
+import { getPassword } from './db/passwords.js'
+import { isAlreadyRegister, registerUser } from "./db/register.js";
+// Comando para ejecutar el backend: node server.js
 // fetch desde frontend http://localhost:5000/login
 
 //Lista de direcciones que pueden acceder al backend
@@ -23,16 +31,52 @@ app.get('/', (request, response) => {
     response.send('test route')
 })
 
-app.get('/register', (request, response) => {
-    const { name, email } = request.body
-    response.json({ message: 'Hello from the backend' })
+app.post('/register', async (request, response) => {
+    const { name, lastName, email, tel, password } = request.body
+    try {
+        if (isAlreadyRegister(email)) {
+            return response.status(409).json({ 'message': 'El correo ya se encuentra registrado' })
+        }
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const id = await registerUser(name, lastName, email, tel, hashedPassword)
+        console.log('ok')
+        return response.status(201).json({ id: id, name: name, email: email })
+    } catch (e) {
+        console.log(e)
+        response.status(500).json({ 'message': 'Error en la base de datos' })
+    }
 })
 
-app.get('/login', (request, response) => {
+app.post('/login', async (request, response) => {
     const { email, password } = request.body
-    const token = jwt.sign({ email: email }, process.env.SECRET_JWT_KEY, { expiresIn: '1h' })
-    response.cookie('access_token', token, { httpOnly: true, sameSite: true })
+    if (!email || !password) {
+        console.log('Faltan datos')
+        return response.status(400).json({ 'message': 'Correo y contraseña son requeridos' })
+    }
+    try {
+        const dbPassword = await getPassword(email)
+        if (!dbPassword) {
+            return response.status(404).json({ 'message': 'Usuario no encontrado' })
+        }
+
+        bcrypt.compare(password, dbPassword.password_hash, (e, result) => {
+            if (e) {
+                return response.status(401).json({ 'message': 'La contraseña es incorrecta' })
+            }
+            if (result) {
+                const accessToken = jwt.sign({ email: email }, process.env.ACCESS_SECRET_JWT_KEY, { expiresIn: '15m' })
+                const refreshToken = jwt.sign({ email: email }, process.env.REFRESH_SECRET_JWT_KEY, { expiresIn: '30d' })
+                response.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: true, maxAge: 24 * 60 * 60 * 1000 })
+                response.status(200).json({ accessToken: accessToken })
+            }
+        })
+    } catch (e) {
+        response.status(500).json({ 'message': 'Error en la base de datos' })
+    }
+
 })
+
+
 
 app.post('logout', (request, response) => {
     response.clearCookie('access_token')
