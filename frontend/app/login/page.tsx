@@ -12,16 +12,51 @@ export default function page() {
     const email = formData.get('email')
     const password = formData.get('password')
 
-    const response = await fetch('http://localhost:5000/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, password: password }),
-    })
+    try {
 
-    if (response.ok) {
-      router.push('/home')
-    } else {
-      //Mostrar un error 
+      const response = await fetch('http://localhost:5000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, password: password }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        const role = data.role
+        if (role == 'Administrador') {
+
+        } else if (role == 'Paciente') {
+          router.replace('/home')
+        } else if (role == 'Especialista') {
+
+        } else if (role == 'Recepcionista') {
+
+        } else if (role == 'Auditor') {
+
+        }
+      } else {
+        const status = response.status
+        const data = await response.json()
+        const error = data.message
+        if (status == 400) {
+          //correo y contraseña con requeridos
+        }
+        else if (status == 404) {
+          //Correo no encontrado
+        }
+        else if (status == 401) {
+          //La contrase;a es incorrecta
+        }
+        else if (status == 500) {
+          //Hubo un problema con la base de datos
+        } else {
+          //Hubo un problema desconocido
+        }
+      }
+
+    } catch (e) {
+      //Mostrar un error igual al de arriba
+      console.log(e)
     }
 
   }

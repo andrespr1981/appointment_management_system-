@@ -18,20 +18,41 @@ export default function RegisterPage() {
 
     if (password != confirmPassword) {
       return;
+      //Mostrar un error de que que las contraseñas no coindicen
     }
-    const response = await fetch('http://localhost:5000/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: name,
-        lastName: lastName,
-        email: email,
-        tel: tel,
-        password: password
-      }),
-    })
-    if (response.ok) {
-      router.push('/home')
+
+    try {
+
+      const response = await fetch('http://localhost:5000/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name,
+          lastName: lastName,
+          email: email,
+          tel: tel,
+          password: password
+        }),
+      })
+
+      if (response.ok) {
+        router.replace('/home')
+      } else {
+        const status = response.status
+        const data = await response.json()
+        const error = data.message
+        if (status == 400) {
+          //Todos los datos son requeridos
+        } else if (status == 409) {
+          //El correo ya esta registrado
+        } else if (status == 500) {
+          //error en la base de datos
+        }
+        //Mostrar un error de que un problema con la solicitud 
+      }
+
+    } catch (e) {
+      //Mostrar un error de que un problema con la solicitud 
     }
   }
 

@@ -1,29 +1,33 @@
 import dotenv from "dotenv";
+dotenv.config();
 import cors from "cors";
+import rateLimit from 'express-rate-limit';
 import express from "express";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import bcrypt from "bcrypt";
 import appointmentsRouter from "./routes/appointmens.js";
 
-dotenv.config();
-
-const app = express();
-
-
 import { getPassword } from './db/passwords.js'
 import { isAlreadyRegister, registerUser } from "./db/register.js";
 // Comando para ejecutar el backend: node server.js
 // fetch desde frontend http://localhost:5000/login
 
+const app = express();
+//Limitador de solicitudes por ip
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 100,
+    message: { 'message': 'Demaciadas solicitudes' }
+})
+
 //Lista de direcciones que pueden acceder al backend
 app.use(cors({
     origin: ['http://localhost:3000']
 }))
-
+app.use(limiter)
 app.use(express.json())
 app.use(cookieParser())
-
 // Se importa las rutas de las citas
 app.use('appointmens', appointmentsRouter)
 
@@ -33,6 +37,9 @@ app.get('/', (request, response) => {
 
 app.post('/register', async (request, response) => {
     const { name, lastName, email, tel, password } = request.body
+    if (!name || !lastName || !email || !tel || !password) {
+        return response.status(400).json({ 'message': 'Todos los datos son requeridos' })
+    }
     try {
         if (isAlreadyRegister(email)) {
             return response.status(409).json({ 'message': 'El correo ya se encuentra registrado' })
@@ -50,7 +57,6 @@ app.post('/register', async (request, response) => {
 app.post('/login', async (request, response) => {
     const { email, password } = request.body
     if (!email || !password) {
-        console.log('Faltan datos')
         return response.status(400).json({ 'message': 'Correo y contraseña son requeridos' })
     }
     try {
@@ -67,7 +73,11 @@ app.post('/login', async (request, response) => {
                 const accessToken = jwt.sign({ email: email }, process.env.ACCESS_SECRET_JWT_KEY, { expiresIn: '15m' })
                 const refreshToken = jwt.sign({ email: email }, process.env.REFRESH_SECRET_JWT_KEY, { expiresIn: '30d' })
                 response.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: true, maxAge: 24 * 60 * 60 * 1000 })
-                response.status(200).json({ accessToken: accessToken })
+                response.status(200).json({
+                    accessToken: accessToken,
+                    'name': 'Andres',
+                    'role': 'Paciente'
+                })
             }
         })
     } catch (e) {
@@ -76,8 +86,6 @@ app.post('/login', async (request, response) => {
 
 })
 
-
-
 app.post('logout', (request, response) => {
     response.clearCookie('access_token')
 })
@@ -85,8 +93,6 @@ app.post('logout', (request, response) => {
 app.get('/protected', (request, response) => {
     const token = request.cookie.access_token
 })
-
-
 
 app.listen(5000, () => {
     console.log('server is active')
