@@ -1,7 +1,7 @@
 import { pool } from './db.js'
 
-export async function getPassword(email) {
-    const query = 'SELECT password_hash FROM usuarios WHERE correo = ?'
+export async function getUserData(email) {
+    const query = 'SELECT id_usuario,password_hash FROM usuarios WHERE correo = ?'
     const [rows] = await pool.query(query, [email])
     if (!rows.length) {
         return null

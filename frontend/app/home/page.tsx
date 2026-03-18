@@ -5,6 +5,43 @@ import './home.css'
 export default function HomePage() {
   const [openModal, setOpenModal] = useState(false)
 
+  async function getSpecialities() {
+    try {
+      const response = await fetch('http://localhost:5000/specialities', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (response.ok) {
+        const data = await response.json()
+        const specialities = data.specialities
+      }
+
+    } catch (e) {
+      //Mostrar un cuadrito rojo de que algo salio mal
+    }
+  }
+
+  async function getSpecialistsBySpeciality(specialityID: Number) {
+    try {
+      const response = await fetch(`http://localhost:5000/specialities/id=${specialityID}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (response.ok) {
+        const data = await response.json()
+        const specialists = data.specialists
+      }
+
+    } catch (e) {
+      //Mostrar un cuadrito rojo de que algo salio mal
+    }
+  }
+
+  function handleAddAppointButton() {
+    getSpecialities()
+    setOpenModal(true)
+  }
+
   const [appointments, setAppointments] = useState([
     {
       id: 1,
@@ -27,29 +64,8 @@ export default function HomePage() {
   })
 
   // AGREGAR CITA
-  const handleAddAppointment = () => {
-    if (!form.doctor || !form.date || !form.time) {
-      alert('Completa los campos obligatorios')
-      return
-    }
+  async function handleAddAppointment(e: React.SubmitEvent<HTMLFormElement>) {
 
-    const newAppointment = {
-      id: Date.now(),
-      ...form
-    }
-
-    setAppointments([...appointments, newAppointment])
-    setOpenModal(false)
-
-    // reset form
-    setForm({
-      doctor: '',
-      specialty: '',
-      date: '',
-      time: '',
-      reason: '',
-      paid: false
-    })
   }
 
   // ELIMINAR CITA
@@ -69,7 +85,7 @@ export default function HomePage() {
       {/* BOTON */}
       <button
         className="primary-button"
-        onClick={() => setOpenModal(true)}
+        onClick={() => { handleAddAppointButton() }}
       >
         + Agendar Cita
       </button>
@@ -122,60 +138,62 @@ export default function HomePage() {
 
             <h2>Agendar Cita</h2>
 
-            <input
-              className="form-input"
-              placeholder="Doctor"
-              value={form.doctor}
-              onChange={(e) => setForm({ ...form, doctor: e.target.value })}
-            />
-
-            <input
-              className="form-input"
-              placeholder="Especialidad"
-              value={form.specialty}
-              onChange={(e) => setForm({ ...form, specialty: e.target.value })}
-            />
-
-            <input
-              type="date"
-              className="form-input"
-              onChange={(e) => setForm({ ...form, date: e.target.value })}
-            />
-
-            <input
-              type="time"
-              className="form-input"
-              onChange={(e) => setForm({ ...form, time: e.target.value })}
-            />
-
-            <textarea
-              className="form-input"
-              placeholder="Motivo"
-              onChange={(e) => setForm({ ...form, reason: e.target.value })}
-            />
-
-            {/* CHECK PAGADO */}
-            <label>
+            <form action="" onSubmit={handleAddAppointment}>
               <input
-                type="checkbox"
-                checked={form.paid}
-                onChange={(e) =>
-                  setForm({ ...form, paid: e.target.checked })
-                }
+                className="form-input"
+                placeholder="Doctor"
+                value={form.doctor}
+                onChange={(e) => setForm({ ...form, doctor: e.target.value })}
               />
-              Pagado
-            </label>
 
-            <button
-              className="primary-button"
-              onClick={handleAddAppointment}
-            >
-              Confirmar Cita
-            </button>
+              <input
+                className="form-input"
+                placeholder="Especialidad"
+                value={form.specialty}
+                onChange={(e) => setForm({ ...form, specialty: e.target.value })}
+              />
 
-            <button onClick={() => setOpenModal(false)}>
-              Cerrar
-            </button>
+              <input
+                type="date"
+                className="form-input"
+                onChange={(e) => setForm({ ...form, date: e.target.value })}
+              />
+
+              <input
+                type="time"
+                className="form-input"
+                onChange={(e) => setForm({ ...form, time: e.target.value })}
+              />
+
+              <textarea
+                className="form-input"
+                placeholder="Motivo"
+                onChange={(e) => setForm({ ...form, reason: e.target.value })}
+              />
+
+              {/* CHECK PAGADO */}
+              <label>
+                <input
+                  type="checkbox"
+                  checked={form.paid}
+                  onChange={(e) =>
+                    setForm({ ...form, paid: e.target.checked })
+                  }
+                />
+                Pagado
+              </label>
+
+              <button
+                type='submit'
+                className="primary-button"
+              >
+                Confirmar Cita
+              </button>
+
+              <button onClick={() => setOpenModal(false)}>
+                Cerrar
+              </button>
+            </form>
 
           </div>
         </div>

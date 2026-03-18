@@ -11,6 +11,15 @@ export default function page() {
     const formData = new FormData(e.currentTarget)
     const email = formData.get('email')
     const password = formData.get('password')
+    if (!email) {
+      //Ahi pones que el cuadrito donde se pone el correo se ponga rojo o algo asi 
+      // y que cuando vuelva a escribir se quite el color rojo 
+      //correo es requerido
+    }
+    if (!password) {
+      // Igual con la contrase;a si no esta que se ponga rojo el cuadrito
+      //password es requerida
+    }
 
     try {
 
@@ -40,15 +49,19 @@ export default function page() {
         const error = data.message
         if (status == 400) {
           //correo y contraseña con requeridos
+          //Que se pongan rojos 
         }
         else if (status == 404) {
           //Correo no encontrado
+          //Que se ponga rojo el cuadrito y te ponga un mensaje de que no se encontro el correo
         }
         else if (status == 401) {
           //La contrase;a es incorrecta
+          //Que se ponga rojo el cuadrito y te ponga un emnsaje de que ta mal 
         }
         else if (status == 500) {
           //Hubo un problema con la base de datos
+          // Que salga un cuadrito rojo encima del email donde te ponga que hubo un error y que intente mas tarde
         } else {
           //Hubo un problema desconocido
         }
@@ -96,7 +109,7 @@ export default function page() {
             />
           </div>
 
-          <button className="primary-button">
+          <button type='submit' className="primary-button">
             Iniciar Sesión
           </button>
         </form>

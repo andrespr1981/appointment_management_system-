@@ -7,8 +7,10 @@ import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import bcrypt from "bcrypt";
 import appointmentsRouter from "./routes/appointmens.js";
+import specialistsRouter from "./routes/specialists.js";
+import specialitiesRouter from "./routes/specialities.js"
 
-import { getPassword } from './db/passwords.js'
+import { getUserData } from './db/passwords.js'
 import { isAlreadyRegister, registerUser } from "./db/register.js";
 // Comando para ejecutar el backend: node server.js
 // fetch desde frontend http://localhost:5000/login
@@ -29,7 +31,9 @@ app.use(limiter)
 app.use(express.json())
 app.use(cookieParser())
 // Se importa las rutas de las citas
-app.use('appointmens', appointmentsRouter)
+app.use('/appointmens', appointmentsRouter)
+app.use('/specialists', specialistsRouter)
+app.use('/specialities', specialitiesRouter)
 
 app.get('/', (request, response) => {
     response.send('test route')
@@ -41,12 +45,11 @@ app.post('/register', async (request, response) => {
         return response.status(400).json({ 'message': 'Todos los datos son requeridos' })
     }
     try {
-        if (isAlreadyRegister(email)) {
+        if (await isAlreadyRegister(email)) {
             return response.status(409).json({ 'message': 'El correo ya se encuentra registrado' })
         }
         const hashedPassword = await bcrypt.hash(password, 10)
         const id = await registerUser(name, lastName, email, tel, hashedPassword)
-        console.log('ok')
         return response.status(201).json({ id: id, name: name, email: email })
     } catch (e) {
         console.log(e)
@@ -60,18 +63,18 @@ app.post('/login', async (request, response) => {
         return response.status(400).json({ 'message': 'Correo y contraseña son requeridos' })
     }
     try {
-        const dbPassword = await getPassword(email)
+        const userData = await getUserData(email)
         if (!dbPassword) {
             return response.status(404).json({ 'message': 'Usuario no encontrado' })
         }
 
-        bcrypt.compare(password, dbPassword.password_hash, (e, result) => {
+        bcrypt.compare(password, userData.password_hash, (e, result) => {
             if (e) {
                 return response.status(401).json({ 'message': 'La contraseña es incorrecta' })
             }
             if (result) {
-                const accessToken = jwt.sign({ email: email }, process.env.ACCESS_SECRET_JWT_KEY, { expiresIn: '15m' })
-                const refreshToken = jwt.sign({ email: email }, process.env.REFRESH_SECRET_JWT_KEY, { expiresIn: '30d' })
+                const accessToken = jwt.sign({ userID: id_usuario }, process.env.ACCESS_SECRET_JWT_KEY, { expiresIn: '15m' })
+                const refreshToken = jwt.sign({ userID: id_usuario }, process.env.REFRESH_SECRET_JWT_KEY, { expiresIn: '30d' })
                 response.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: true, maxAge: 24 * 60 * 60 * 1000 })
                 response.status(200).json({
                     accessToken: accessToken,
