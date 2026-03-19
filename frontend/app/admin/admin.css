@@ -1,0 +1,174 @@
+:root {
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --black: #000000;
+  --white: #ffffff;
+  --bg-light: #f8fafc;
+}
+
+/* FONDO */
+html, body, .admin-layout {
+  background-color: var(--bg-light) !important;
+  color: var(--black) !important;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+/* HEADER  */
+.admin-header {
+  background: var(--white);
+  padding: 1rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.logout-trigger {
+  background: white;
+  border: 1px solid var(--danger);
+  color: var(--danger) !important;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.logout-trigger:hover {
+  background: var(--danger);
+  color: white !important;
+}
+
+/* ESTADÍSTICAS KPIs */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 2rem 2.5rem;
+}
+
+.kpi-card {
+  background: var(--white);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.kpi-card span { color: #64748b; font-size: 0.9rem; margin-bottom: 5px; }
+.kpi-card strong { font-size: 1.8rem; color: var(--black) !important; }
+
+/* NAVEGACIÓN */
+.tab-nav { padding: 0 2.5rem; display: flex; gap: 10px; margin-bottom: 1rem; }
+.tab-nav button {
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  background: #eee;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+.tab-nav button.active { background: var(--black); color: white !important; }
+
+/* TABLA  */
+.content-card {
+  background: var(--white);
+  margin: 0 2.5rem 2rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.card-header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-table th {
+  background: #f8fafc;
+  padding: 12px 20px;
+  color: #475569;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.admin-table td {
+  padding: 16px 20px;
+  border-top: 1px solid #f1f5f9;
+  color: var(--black) !important;
+}
+
+/* ROLES */
+.role-tag {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.role-tag.cliente { background: #ebf8ff; color: #3182ce !important; }
+.role-tag.administrador { background: #faf5ff; color: #805ad5 !important; }
+.role-tag.recepcionista { background: #f0fff4; color: #38a169 !important; }
+.role-tag.especialista { background: #fff5f5; color: #e53e3e !important; }
+
+/* MODALES */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+}
+
+.modal-content {
+  background: white; padding: 35px; border-radius: 15px;
+  width: 100%; max-width: 450px; position: relative;
+}
+
+.modal-title { margin-bottom: 20px; font-weight: 700; }
+
+.close-x-btn {
+  position: absolute; top: 15px; right: 15px;
+  background: none; border: none; font-size: 20px;
+  color: var(--danger) !important; cursor: pointer;
+}
+
+/* FORMULARIO DE REGISTRO */
+.modal-form { display: flex; flex-direction: column; gap: 15px; }
+.input-group { display: flex; flex-direction: column; gap: 5px; }
+.input-group label { font-size: 0.85rem; font-weight: 600; color: #4a5568; }
+.input-group input, .input-group select {
+  padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px;
+}
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+/* BOTONES DE ACCIÓN */
+.modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 25px; }
+
+.black-btn, .submit-btn {
+  background: var(--black); color: white !important;
+  border: none; padding: 12px 20px; border-radius: 8px;
+  font-weight: 700; cursor: pointer;
+}
+
+.yes-btn-red {
+  background: var(--danger) !important; color: white !important;
+  border: none; padding: 10px 24px; border-radius: 8px;
+  font-weight: 700; cursor: pointer;
+}
+
+.no-btn {
+  background: white; border: 1px solid #cbd5e0;
+  padding: 10px 24px; border-radius: 8px; cursor: pointer;
+}
+
+.no-btn:hover { background: #f8fafc; }
