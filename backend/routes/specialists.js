@@ -1,5 +1,5 @@
 import express from "express";
-import { getSpecialists } from "../db/specialists.js";
+import { getSpecialists } from "../db/routes/specialists.js";
 const router = express.Router()
 
 //Las rutas siempre empiezan con / porque en el archivo de server ya estan declaradas como /specialists

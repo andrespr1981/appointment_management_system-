@@ -1,4 +1,4 @@
-import pool from './db.js'
+import pool from '../db.js'
 
 export async function getSpecialists() {
     const query = 'SELECT especialistas.id_especialista,usuarios.nombre,usuarios.apellido FROM usuarios JOIN ON usuarios.id_usuario = especialistas.id_usuario WHERE id_rol = 3;'

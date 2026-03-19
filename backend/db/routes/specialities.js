@@ -1,4 +1,4 @@
-import pool from './db.js'
+import pool from '../db.js'
 
 export async function getSpecialities() {
     const query = 'SELECT id_especialidad, nombre FROM especialidades ;'
