@@ -38,6 +38,7 @@ export default function RegisterPage() {
       if (response.ok) {
         router.replace('/home')
       } else {
+
         const status = response.status
         const data = await response.json()
         const error = data.message

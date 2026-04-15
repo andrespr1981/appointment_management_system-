@@ -28,6 +28,7 @@ router.post('/', async (request, response) => {
                     'name': 'Andres',
                     'role': 'Paciente'
                 })
+                return;
             }
         })
     } catch (e) {

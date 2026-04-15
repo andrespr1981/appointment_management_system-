@@ -29,7 +29,7 @@ app.use(limiter)
 app.use(express.json())
 app.use(cookieParser())
 
-// Se importa las rutas de las citas
+// Se importa las rutas 
 app.use('/login', loginRouter)
 app.use('/register', registerRouter)
 app.use('/appointmens', appointmentsRouter)
