@@ -4,6 +4,7 @@ import cors from "cors";
 import rateLimit from 'express-rate-limit';
 import express from "express";
 import cookieParser from "cookie-parser";
+import authRouter from "./routes/auth.js"
 import loginRouter from "./routes/login.js";
 import registerRouter from "./routes/register.js";
 import appointmentsRouter from "./routes/appointmens.js";
@@ -23,13 +24,15 @@ const limiter = rateLimit({
 
 //Lista de direcciones que pueden acceder al backend
 app.use(cors({
-    origin: ['http://localhost:3000']
+    origin: ['http://localhost:3000'],
+    credentials: true
 }))
 app.use(limiter)
 app.use(express.json())
 app.use(cookieParser())
 
 // Se importa las rutas 
+app.use('/auth', authRouter)
 app.use('/login', loginRouter)
 app.use('/register', registerRouter)
 app.use('/appointmens', appointmentsRouter)

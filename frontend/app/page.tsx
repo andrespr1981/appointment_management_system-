@@ -1,9 +1,19 @@
 "use client";
+import { useEffect } from "react";
 import { ThreeDots } from 'react-loader-spinner';
+import { verifyRefreshToken } from "./auth";
+import { useRouter } from "next/navigation";
 //Comando para ejecutar frontend: npm run dev
 export default function Home() {
 
-  //Me quede haciendo la fucnion para detectar si el usuario esta logeado o no, con el acesss token o el refresh toekn
+  const router = useRouter();
+
+  useEffect(() => {
+    const statusAsync = async () => {
+      await verifyRefreshToken(router)
+    }
+    statusAsync()
+  }, [])
 
   return (
     <div>

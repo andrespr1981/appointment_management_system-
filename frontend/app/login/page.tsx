@@ -1,7 +1,9 @@
 'use client'
+import { useAuth } from '../authContext';
 import './login.css'
 import { useRouter } from 'next/navigation'
 export default function page() {
+  const { setAccessToken } = useAuth()
 
   const router = useRouter();
 
@@ -25,6 +27,7 @@ export default function page() {
 
       const response = await fetch('http://localhost:5000/login', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, password: password }),
       })
@@ -43,6 +46,7 @@ export default function page() {
         } else if (role == 'Auditor') {
 
         }
+        setAccessToken(data.accessToken)
       } else {
         const status = response.status
         const data = await response.json()

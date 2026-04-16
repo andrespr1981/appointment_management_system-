@@ -1,9 +1,18 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './home.css'
+import { useAuth } from '../authContext';
 
 export default function HomePage() {
   const [openModal, setOpenModal] = useState(false)
+  const { accessToken } = useAuth();
+
+  useEffect(() => {
+    if (!accessToken) {
+      // pedir nuevo token con refresh 
+
+    }
+  }, [accessToken]);
 
   async function getSpecialities() {
     try {
