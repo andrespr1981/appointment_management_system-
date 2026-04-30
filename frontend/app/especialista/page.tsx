@@ -14,6 +14,7 @@ export default function Especialista() {
       .catch(() => setCitas([]));
   }, []);
 
+
   return (
     <div className="page">
       <div className="container">
@@ -33,7 +34,7 @@ export default function Especialista() {
             Próximas
           </button>
           <button className={tab === "historial" ? "active" : ""} onClick={() => setTab("historial")}>
-            Historial
+            Historial 
           </button>
         </div>
 
