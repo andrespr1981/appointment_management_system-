@@ -35,7 +35,8 @@ export default function RegisterPage() {
           password: password
         }),
       })
-
+      const json = await response.json()
+      console.log(json)
       if (response.ok) {
         router.replace('/home')
       } else {

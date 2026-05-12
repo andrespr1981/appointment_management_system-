@@ -4,7 +4,7 @@ export async function registerUser(name, lastName, email, tel, password) {
     try {
         const query = 'INSERT INTO usuarios(id_rol,nombre,apellido,correo,telefono,password_hash) VALUES (?,?,?,?,?,?)'
         const [rows] = await pool.query(query, ['2', name, lastName, email, tel, password])
-        return { success: false, id_usuario: rows.id_usuario }
+        return { success: true, id_usuario: rows.insertId }
     } catch (e) {
         return { success: false, error: e }
     }

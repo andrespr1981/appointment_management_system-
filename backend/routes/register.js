@@ -20,18 +20,19 @@ router.post('/', async (request, response) => {
         const userData = await registerUser(name, lastName, email, tel, hashedPassword)
         const accessToken = jwt.sign({
             'id_usuario': userData.id_usuario,
-            'role': userData.id_rol
+            'role': 'Paciente'
         }, process.env.ACCESS_SECRET_JWT_KEY, { expiresIn: '15m' })
         const refreshToken = jwt.sign({ 'id_usuario': userData.id_usuario }, process.env.REFRESH_SECRET_JWT_KEY, { expiresIn: '30d' })
-        if (!insertRefreshToken(1, refreshToken, id_usuario, browser.name)) {
+        const inserted = await insertRefreshToken(1, refreshToken, userData.id_usuario, browser.name)
+        if (!inserted) {
             throw Error
         }
-        response.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: true, maxAge: 24 * 60 * 60 * 1000 })
+        response.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: true, maxAge: 30 * 24 * 60 * 60 * 1000 })
         response.status(200).json({
             accessToken: accessToken,
-            'id_usuario': id_usuario,
+            'id_usuario': userData.id_usuario,
             'name': name,
-            'role': '2'
+            'role': 'Paciente'
         })
         return;
     } catch (e) {
