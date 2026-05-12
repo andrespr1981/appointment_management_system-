@@ -17,12 +17,9 @@ router.post('/verify_refresh', async (request, response) => {
 })
 
 router.post('/access', async (request, response) => {
-    const refreshToken = request.cookies.refreshToken
-    if (!verifyRefreshToken(refreshToken,)) {
-        return response.status(401).json({ message: 'No hay token' })
-    }
-    if (!refreshToken) {
-        return response.status(401).json({ message: 'No hay token' })
+    const { access_token } = request.body
+    if (!access) {
+        return response.status(401).json({ message: 'No hay acess token' })
     }
     return response.status(200).json({ sucess: true })
 })

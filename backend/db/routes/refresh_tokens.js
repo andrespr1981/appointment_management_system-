@@ -1,6 +1,5 @@
 import { pool } from '../db.js'
 
-
 export async function insertRefreshToken(tenant_id, token, id_usuario, device) {
     const today = new Date()
     const expirationDay = new Date(today)
@@ -14,7 +13,7 @@ export async function insertRefreshToken(tenant_id, token, id_usuario, device) {
     }
     return true
 }
-//mE QUEDE CON LOS REFRESH TOKENS Y ASI 
+//ME QUEDE CON LOS REFRESH TOKENS Y ASI 
 export async function verifyRefreshToken(token, device) {
     const query = 'SELECT refresh_token FROM refresh_tokens WHERE refresh_token = ? AND dispositivo = ? and esta_revocado = 0;'
     const [rows] = await pool.query(query, [token, device])

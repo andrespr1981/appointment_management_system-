@@ -17,7 +17,7 @@ router.post('/', async (request, response) => {
         }
         let { browser } = UAParser(request.headers['user-agent']);
         const hashedPassword = await bcrypt.hash(password, 10)
-        const id_usuario = await registerUser(name, lastName, email, tel, hashedPassword)
+        const userData = await registerUser(name, lastName, email, tel, hashedPassword)
         const accessToken = jwt.sign({
             'id_usuario': userData.id_usuario,
             'role': userData.id_rol
