@@ -1,25 +1,18 @@
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function verifyRefreshToken(router: AppRouterInstance) {
+export async function verifyRefreshToken(): Promise<{ valid: boolean; status: number }> {
     try {
-        const response = await fetch('http://localhost:5000/auth/refresh', {
+        const response = await fetch(`${API_URL}/auth/verify_refresh`, {
             method: 'POST',
             credentials: 'include'
         })
-        const status = response.status
         if (response.ok) {
-            console.log('hola')
-            router.replace('/home')
-        }
-        else if (status == 401) {
-            router.replace('/login')
-        } else if (status == 500) {
-            //Mostrar de que hubo un error en el servidor
+            return { valid: true, status: response.status }
         } else {
-            //Mostrar de que hubo un error en el servidor
+            return { valid: false, status: 401 }
         }
     } catch (e) {
-        //Mostrar que hubo un error en el servidor
+        return { valid: false, status: 500 }
     }
 }
-
