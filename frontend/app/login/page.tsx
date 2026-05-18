@@ -5,6 +5,7 @@ import './login.css'
 import { useRouter } from 'next/navigation'
 import { verifyRefreshToken } from '../auth';
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID;
 export default function page() {
   const { setAccessToken } = useAuth()
 
@@ -46,11 +47,11 @@ export default function page() {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email, password: password }),
+        body: JSON.stringify({ email: email, password: password, tenant_id: TENANT_ID }),
       })
-
+      const data = await response.json()
+      console.log(data)
       if (response.ok) {
-        const data = await response.json()
         const role = data.role
         if (role == 'Administrador') {
 

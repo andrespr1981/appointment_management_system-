@@ -46,7 +46,7 @@ app.post('/test', (request, response) => {
 })
 
 app.post('logout', (request, response) => {
-    response.clearCookie('access_token')
+    response.clearCookie('refresh_token')
 })
 
 app.get('/protected', (request, response) => {

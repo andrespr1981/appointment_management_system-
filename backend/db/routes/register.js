@@ -1,18 +1,18 @@
 import pool from '../db.js'
 
-export async function registerUser(name, lastName, email, tel, password) {
+export async function registerUser(name, lastName, email, tel, password, tenant_id) {
     try {
-        const query = 'INSERT INTO usuarios(id_rol,nombre,apellido,correo,telefono,password_hash) VALUES (?,?,?,?,?,?)'
-        const [rows] = await pool.query(query, ['2', name, lastName, email, tel, password])
-        return { success: true, id_usuario: rows.insertId }
+        const query = 'INSERT INTO usuarios(id_rol,nombre,apellido,correo,telefono,password_hash,tenant_id) VALUES (?,?,?,?,?,?,?)'
+        const [result] = await pool.query(query, [2, name, lastName, email, tel, password, tenant_id])
+        return { success: true, id_usuario: result.insertId }
     } catch (e) {
         return { success: false, error: e }
     }
 }
-
-export async function isAlreadyRegister(email) {
-    const query = 'SELECT id_usuario FROM usuarios WHERE correo = ?'
-    const [rows] = await pool.query(query, [email])
+//Insertar roles para comprobar que funciona
+export async function isAlreadyRegister(email, tenant_id) {
+    const query = 'SELECT id_usuario FROM usuarios WHERE correo = ? AND tenant_id = ?'
+    const [rows] = await pool.query(query, [email, tenant_id])
     if (!rows.length) {
         return false
     }

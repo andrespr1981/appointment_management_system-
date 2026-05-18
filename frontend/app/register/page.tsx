@@ -2,6 +2,7 @@
 import './register.css'
 import { useRouter } from 'next/navigation'
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID;
 export default function RegisterPage() {
 
   const router = useRouter();
@@ -32,7 +33,8 @@ export default function RegisterPage() {
           lastName: lastName,
           email: email,
           tel: tel,
-          password: password
+          password: password,
+          tenant_id: TENANT_ID
         }),
       })
       const json = await response.json()
