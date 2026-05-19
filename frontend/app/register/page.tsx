@@ -1,6 +1,8 @@
 'use client'
 import './register.css'
 import { useRouter } from 'next/navigation'
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID;
 export default function RegisterPage() {
 
   const router = useRouter();
@@ -23,7 +25,7 @@ export default function RegisterPage() {
 
     try {
 
-      const response = await fetch('http://localhost:5000/register', {
+      const response = await fetch(`${API_URL}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -31,10 +33,12 @@ export default function RegisterPage() {
           lastName: lastName,
           email: email,
           tel: tel,
-          password: password
+          password: password,
+          tenant_id: TENANT_ID
         }),
       })
-
+      const json = await response.json()
+      console.log(json)
       if (response.ok) {
         router.replace('/home')
       } else {

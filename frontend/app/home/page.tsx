@@ -2,21 +2,33 @@
 import { useEffect, useState } from 'react'
 import './home.css'
 import { useAuth } from '../authContext';
-
+import { useRouter } from "next/navigation";
+import { verifyRefreshToken } from '../auth';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export default function HomePage() {
   const [openModal, setOpenModal] = useState(false)
   const { accessToken } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (!accessToken) {
-      // pedir nuevo token con refresh 
-
+      const statusAsync = async () => {
+        const response = await verifyRefreshToken()
+        if (response.valid) {
+          router.replace('/home')
+        } else if (response.status === 500) {
+          //Mensaje de que algo esta mal
+        } else if (!response.valid) {
+          router.replace('/login')
+        }
+      }
+      statusAsync()
     }
-  }, [accessToken]);
+  }, [])
 
   async function getSpecialities() {
     try {
-      const response = await fetch('http://localhost:5000/specialities', {
+      const response = await fetch(`${API_URL}/specialities`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       })

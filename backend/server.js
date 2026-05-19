@@ -39,12 +39,14 @@ app.use('/appointmens', appointmentsRouter)
 app.use('/specialists', specialistsRouter)
 app.use('/specialities', specialitiesRouter)
 
-app.get('/', (request, response) => {
+app.post('/test', (request, response) => {
+    let { browser } = UAParser(request.headers['user-agent']);
+    console.log(browser)
     response.send('test route')
 })
 
 app.post('logout', (request, response) => {
-    response.clearCookie('access_token')
+    response.clearCookie('refresh_token')
 })
 
 app.get('/protected', (request, response) => {

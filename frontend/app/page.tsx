@@ -10,11 +10,18 @@ export default function Home() {
 
   useEffect(() => {
     const statusAsync = async () => {
-      await verifyRefreshToken(router)
+      const response = await verifyRefreshToken()
+      if (response.valid) {
+        router.replace('/home')
+      } else if (response.status === 500) {
+        //Mensaje de que algo esta mal
+      } else if (!response.valid) {
+        router.replace('/login')
+      }
     }
     statusAsync()
   }, [])
-
+  //Ponlo bien 
   return (
     <div>
       <ThreeDots

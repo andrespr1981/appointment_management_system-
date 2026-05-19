@@ -14,9 +14,4 @@ export const pool = mysql.createPool(
 
 ).promise()
 
-async function getUsers() {
-    const [rows] = await pool.query('SELECT * FROM usuarios')
-    console.log(rows)
-}
-
 export default pool;

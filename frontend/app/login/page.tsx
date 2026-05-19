@@ -1,11 +1,29 @@
 'use client'
 import { useAuth } from '../authContext';
+import { useEffect } from "react";
 import './login.css'
 import { useRouter } from 'next/navigation'
+import { verifyRefreshToken } from '../auth';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID;
 export default function page() {
   const { setAccessToken } = useAuth()
 
   const router = useRouter();
+
+  useEffect(() => {
+    const statusAsync = async () => {
+      const response = await verifyRefreshToken()
+      if (response.valid) {
+        router.replace('/home')
+      } else if (response.status === 500) {
+        //Mensaje de que algo esta mal
+      } else if (!response.valid) {
+        router.replace('/login')
+      }
+    }
+    statusAsync()
+  }, [])
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -25,15 +43,15 @@ export default function page() {
 
     try {
 
-      const response = await fetch('http://localhost:5000/login', {
+      const response = await fetch(`${API_URL}/login`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email, password: password }),
+        body: JSON.stringify({ email: email, password: password, tenant_id: TENANT_ID }),
       })
-
+      const data = await response.json()
+      console.log(data)
       if (response.ok) {
-        const data = await response.json()
         const role = data.role
         if (role == 'Administrador') {
 
