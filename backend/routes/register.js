@@ -43,18 +43,17 @@ router.post('/', async (request, response) => {
             'role': 'Paciente',
             'tenant_id': tenant_id
         }, process.env.ACCESS_SECRET_JWT_KEY, { expiresIn: '15m' })
-        const refreshToken = jwt.sign({ 'id_usuario': userData.id_usuario, 'tenant_id': tenant_id }, process.env.REFRESH_SECRET_JWT_KEY, { expiresIn: '30d' })
+        const refreshToken = jwt.sign({ 'id_usuario': userData.id_usuario, 'role': 'Paciente', 'tenant_id': tenant_id }, process.env.REFRESH_SECRET_JWT_KEY, { expiresIn: '30d' })
         const inserted = await insertRefreshToken(refreshToken, userData.id_usuario, browser.name, tenant_id)
         if (!inserted) {
             throw Error
         }
         response.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: true, maxAge: 30 * 24 * 60 * 60 * 1000 })
         response.status(200).json({
-            accessToken: accessToken,
+            'accessToken': accessToken,
             'id_usuario': userData.id_usuario,
+            'role': 'Paciente',
             'tenant_id': tenant_id,
-            'name': name,
-            'role': 'Paciente'
         })
         return;
     } catch (e) {

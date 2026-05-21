@@ -2,10 +2,11 @@ import express from "express";
 import { createAppointment, deleteAppointment, getAppoinmentsByUser } from "../db/routes/appointments.js";
 const router = express.Router()
 
-router.get('/:id', async (request, response) => {
+router.get('/:id/:tenant_id', async (request, response) => {
     const userId = Number(request.params.id)
+    const tenant_id = Number(request.params.tenant_id)
     if (!userId) {
-        return response.status(400).json({ 'message': 'El id del usuario es requerido' })
+        return response.status(400)
     }
     try {
         const appointments = await getAppoinmentsByUser(userId)
@@ -21,12 +22,12 @@ router.get('/:id', async (request, response) => {
 })
 
 router.post('/', async (request, response) => {
-    const { userId, specialistId, date, time, reason } = request.body
-    if (!specialistId || !userId || !date || !time || !reason) {
-        return response.status(400).json({ 'message': 'Todos los datos son requeridos' })
+    const { userId, specialistId, date, time, reason, tenant_id } = request.body
+    if (!specialistId || !userId || !date || !time || !reason || tenant_id) {
+        return response.status(400)
     }
     try {
-        const result = await createAppointment(userId, specialistId, date, time, reason)
+        const result = await createAppointment(userId, specialistId, date, time, reason, tenant_id)
         if (result.sucess) {
             return response.status(200).json({ apointmentId: result.apointmentId })
         } else {
@@ -38,8 +39,9 @@ router.post('/', async (request, response) => {
     }
 })
 
-router.delete('/id', async (request, response) => {
+router.delete('/:id/:tenant_id', async (request, response) => {
     const apointmentId = Number(request.params.id)
+    const tenant_id = Number(request.params.tenant_id)
     if (!apointmentId) {
         return response.status(400).json({ 'message': 'El id de la cita es requerido' })
     }

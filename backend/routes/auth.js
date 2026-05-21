@@ -13,20 +13,41 @@ router.post('/verify_refresh', async (request, response) => {
     if (!verifyRefreshToken(refreshToken, browser.name)) {
         return response.status(401).json({ message: 'El token no es correcto' })
     }
-    return response.status(200).json({ sucess: true })
+    try {
+        const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET_JWT_KEY);
+        const accessToken = jwt.sign({
+            'id_usuario': decoded.id_usuario,
+            'role': decoded.role,
+            'tenant_id': decoded.tenant_id
+        }, process.env.ACCESS_SECRET_JWT_KEY, { expiresIn: '15m' })
+        return response.status(200).json({
+            success: true,
+            accessToken: accessToken,
+        });
+    } catch (e) {
+        return response.status(403).json({ message: "Refresh token inválido o expirado" });
+    }
 })
 
-router.post('/access', async (request, response) => {
-    const { access_token } = request.body
-    if (!access_token) {
-        return response.status(401).json({ message: 'No hay acess token' })
+export function middleAcessToken(request, response, next) {
+    const header = request.headers["authorization"];
+    const accessToken = header && header.split(" ")[1];
+
+    if (!accessToken) {
+        return response.status(401).json({ message: "No hay access token" });
     }
+
     try {
-        jwt.verify(access_token, process.env.ACCESS_SECRET_JWT_KEY)
-        return response.status(200).json({ sucess: true })
+        jwt.verify(accessToken, process.env.ACCESS_SECRET_JWT_KEY, (e, decoded) => {
+            if (e) {
+                return response.status(403).json({ 'message': 'Token acess no valido' });
+            }
+            request.user = decoded
+            next()
+        })
     } catch (e) {
-        return response.status(403).json({ success: false });
+        return response.status(403).json({ message: "Algo salio mal" });
     }
-})
+}
 
 export default router

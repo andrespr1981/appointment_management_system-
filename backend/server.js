@@ -5,8 +5,12 @@ import rateLimit from 'express-rate-limit';
 import express from "express";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.js"
+import { middleAcessToken } from "./routes/auth.js"
+import rolesRouter from "./routes/roles.js"
 import loginRouter from "./routes/login.js";
+import logoutRouter from "./routes/logout.js";
 import registerRouter from "./routes/register.js";
+import shedulesRouter from './routes/schedules.js';
 import appointmentsRouter from "./routes/appointmens.js";
 import specialistsRouter from "./routes/specialists.js";
 import specialitiesRouter from "./routes/specialities.js"
@@ -34,23 +38,19 @@ app.use(cookieParser())
 // Se importa las rutas 
 app.use('/auth', authRouter)
 app.use('/login', loginRouter)
+app.use('/logout', logoutRouter)
 app.use('/register', registerRouter)
-app.use('/appointmens', appointmentsRouter)
-app.use('/specialists', specialistsRouter)
-app.use('/specialities', specialitiesRouter)
+app.use('/roles', middleAcessToken, rolesRouter)
+app.use('/schedules', middleAcessToken, shedulesRouter)
+app.use('/specialists', middleAcessToken, specialistsRouter)
+//Faltar probar appointemnts y specialisties
+app.use('/appointmens', middleAcessToken, appointmentsRouter)
+app.use('/specialities', middleAcessToken, specialitiesRouter)
 
 app.post('/test', (request, response) => {
     let { browser } = UAParser(request.headers['user-agent']);
     console.log(browser)
     response.send('test route')
-})
-
-app.post('logout', (request, response) => {
-    response.clearCookie('refresh_token')
-})
-
-app.get('/protected', (request, response) => {
-    const token = request.cookie.access_token
 })
 
 app.listen(5000, () => {

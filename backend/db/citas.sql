@@ -13,8 +13,10 @@ CREATE TABLE tenants (
 
 -- 2. Tabla de Roles 
 CREATE TABLE roles (
-    id_rol INT PRIMARY KEY,
-    nombre_rol VARCHAR(50) NOT NULL
+    id_rol INT AUTO_INCREMENT PRIMARY KEY,
+    tenant_id INT NOT NULL,
+    nombre_rol VARCHAR(50) NOT NULL,
+    FOREIGN KEY (tenant_id) REFERENCES tenants(id_tenant) ON DELETE CASCADE
 );
 
 -- 3. Tabla de Especialidades 
@@ -53,7 +55,7 @@ CREATE TABLE especialistas (
     costo_consulta DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (tenant_id) REFERENCES tenants(id_tenant) ON DELETE CASCADE,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
-    FOREIGN KEY (id_especialidad) REFERENCES especialidades(id_especialidad)
+    FOREIGN KEY (id_especialidad) REFERENCES especialidades(id_especialidad) ON DELETE CASCADE
 );
 
 -- 6. Horarios Disponibles
