@@ -91,7 +91,10 @@ export async function updateSpecialist(id_specialist, cedula, price, tenant_id) 
             WHERE id_especialista = ? AND tenant_id = ?
             ;`
         const [rows] = await pool.query(query, [cedula, price, id_specialist, tenant_id])
-        return { success: true }
+        if (rows.affectedRows > 0) {
+            return { success: true }
+        }
+        return { success: false }
     } catch (e) {
         return { success: false }
     }
@@ -101,7 +104,10 @@ export async function deleteSpecialist(id_specialist, tenant_id) {
     try {
         const query = `DELETE FROM especialistas WHERE id_especialista = ? AND tenant_id = ?;`
         const [rows] = await pool.query(query, [id_specialist, tenant_id])
-        return { success: true }
+        if (rows.affectedRows > 0) {
+            return { success: true }
+        }
+        return { success: false }
     } catch (e) {
         return { success: false }
     }

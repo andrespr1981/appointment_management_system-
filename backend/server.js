@@ -43,7 +43,7 @@ app.use('/register', registerRouter)
 app.use('/roles', middleAcessToken, rolesRouter)
 app.use('/schedules', middleAcessToken, shedulesRouter)
 app.use('/specialists', middleAcessToken, specialistsRouter)
-//Faltar probar appointemnts y specialisties
+//Faltar probar appointemnts, y confirmar que si modificaron filas en la base archivo specialities db
 app.use('/appointmens', middleAcessToken, appointmentsRouter)
 app.use('/specialities', middleAcessToken, specialitiesRouter)
 

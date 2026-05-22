@@ -6,25 +6,14 @@ import { UAParser } from 'ua-parser-js';
 import { insertRefreshToken, revokeRefreshToken } from "../db/routes/refresh_tokens.js";
 import { isString } from '../routes/utils/verify_string.js'
 import { isNumber } from '../routes/utils/verify_number.js'
+import { registerUserLogin } from "../db/db.js";
 const router = express.Router()
 
 router.post('/', async (request, response) => {
     const { email, password, tenant_id } = request.body
 
-    if (!email || !password) {
-        return response.status(400).json({ 'message': 'Correo y contraseña son requeridos' })
-    }
-
-    if (!tenant_id) {
-        return response.status(400).json({ 'message': 'Tenant id es requerido' })
-    }
-
-    if (!email.includes('@') || !isString(email)) {
-        return response.status(400).json({ 'message': 'Correo no es valido' })
-    }
-
-    if (!isString(password)) {
-        return response.status(400).json({ 'message': 'La contraseña debe de ser una cadena de texto' })
+    if (!email || !password || !tenant_id || !email.includes('@') || !isString(email) || !isString(password)) {
+        return response.status(400).json({ success: false })
     }
 
     let { browser } = UAParser(request.headers['user-agent']);
@@ -32,12 +21,13 @@ router.post('/', async (request, response) => {
     try {
         const userData = await getUserData(email, tenant_id)
         if (!userData) {
-            return response.status(404).json({ 'message': 'Usuario no encontrado' })
+            return response.status(404).json({ success: false })
         }
 
         bcrypt.compare(password, userData.password_hash, (e, result) => {
             if (e) {
-                return response.status(401).json({ 'message': 'La contraseña es incorrecta' })
+                await registerUserLogin(userData.id_usuario, email, false, browser.name, tenant_id)
+                return response.status(401).json({ success: false })
             }
         })
         const revoke = revokeRefreshToken(userData.id_usuario, browser.name, tenant_id)
@@ -51,6 +41,7 @@ router.post('/', async (request, response) => {
         if (!inserted) {
             throw new Error('No se pudo insertar el refresh token');
         }
+        await registerUserLogin(userData.id_usuario, email, true, browser.name, tenant_id)
         response.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: true, maxAge: 30 * 24 * 60 * 60 * 1000 })
         response.status(200).json({
             'accessToken': accessToken,
@@ -62,7 +53,7 @@ router.post('/', async (request, response) => {
     } catch (e) {
         console.log(e)
         // Solo mandar mensaje de
-        response.status(500).json({ 'message': 'Error en la base de datos' })
+        response.status(500).json({ success: false })
     }
 
 })

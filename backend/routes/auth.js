@@ -8,7 +8,7 @@ router.post('/verify_refresh', async (request, response) => {
     const refreshToken = request.cookies.refreshToken
     let { browser } = UAParser(request.headers['user-agent']);
     if (!refreshToken) {
-        return response.status(401).json({ message: 'No hay token' })
+        return response.status(400).json({ message: 'No hay token' })
     }
     if (!verifyRefreshToken(refreshToken, browser.name)) {
         return response.status(401).json({ message: 'El token no es correcto' })
@@ -25,7 +25,7 @@ router.post('/verify_refresh', async (request, response) => {
             accessToken: accessToken,
         });
     } catch (e) {
-        return response.status(403).json({ message: "Refresh token inválido o expirado" });
+        return response.status(409).json({ message: "Refresh token inválido o expirado" });
     }
 })
 
@@ -34,19 +34,19 @@ export function middleAcessToken(request, response, next) {
     const accessToken = header && header.split(" ")[1];
 
     if (!accessToken) {
-        return response.status(401).json({ message: "No hay access token" });
+        return response.status(400).json({ success: false })
     }
 
     try {
         jwt.verify(accessToken, process.env.ACCESS_SECRET_JWT_KEY, (e, decoded) => {
             if (e) {
-                return response.status(403).json({ 'message': 'Token acess no valido' });
+                return response.status(401).json({ success: false })
             }
             request.user = decoded
             next()
         })
     } catch (e) {
-        return response.status(403).json({ message: "Algo salio mal" });
+        return response.status(409).json({ success: false })
     }
 }
 

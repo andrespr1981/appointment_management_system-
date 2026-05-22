@@ -6,11 +6,8 @@ router.get('/:id/:tenant_id', async (request, response) => {
     const id_specialist = Number(request.params.id)
     const tenant_id = Number(request.params.tenant_id)
 
-    if (!id_specialist) {
-        return response.status(400).json({ 'message': 'El id del usuario es requerido' })
-    }
-    if (!tenant_id) {
-        return response.status(400).json({ 'message': 'El tenant id es requerido' })
+    if (!id_specialist || !tenant_id) {
+        return response.status(400).json({ success: false })
     }
     try {
         const schedule = await getScheduleBySpecialist(id_specialist, tenant_id)
@@ -28,7 +25,7 @@ router.post('/', async (request, response) => {
     const { id_specialist, date, schedule, tenant_id } = request.body
 
     if (!id_specialist || !tenant_id || !date || !schedule) {
-        return response.status(400)
+        return response.status(400).json({ success: false })
     }
 
     try {
@@ -47,13 +44,13 @@ router.patch('/', async (request, response) => {
     const { id_schedule, date, schedule, tenant_id } = request.body
 
     if (!id_schedule || !tenant_id || !date || !schedule) {
-        return response.status(400)
+        return response.status(400).json({ success: false })
     }
 
     try {
         const updated = await updateSchedule(id_schedule, date, schedule, tenant_id)
         if (updated.success) {
-            return response.status(201).json({ success: true })
+            return response.status(200).json({ success: true })
         } else {
             return response.status(500).json({ success: false })
         }
@@ -67,13 +64,13 @@ router.delete('/:id/:tenant_id', async (request, response) => {
     const tenant_id = Number(request.params.tenant_id)
 
     if (!tenant_id || !id_schedule) {
-        return response.status(400)
+        return response.status(400).json({ success: false })
     }
 
     try {
         const deleted = await deleteSchedule(id_schedule, tenant_id)
         if (deleted.success) {
-            return response.status(201).json({ success: true })
+            return response.status(200).json({ success: true })
         } else {
             return response.status(500).json({ success: false })
         }

@@ -7,7 +7,7 @@ router.get('/:id', async (request, response) => {
     const tenant_id = Number(request.params.id)
 
     if (!tenant_id) {
-        return response.status(400).json({ 'message': 'El tenant id es requerido' })
+        return response.status(400).json({ success: false })
     }
 
     try {
@@ -26,13 +26,13 @@ router.post('/', async (request, response) => {
     const { name, tenant_id } = request.body
 
     if (!name || !tenant_id) {
-        return response.status(400).json({ 'message': 'El tenant id es requerido' })
+        return response.status(400).json({ success: false })
     }
 
     try {
         const inserted = await createRol(name, tenant_id)
         if (inserted.success) {
-            return response.status(200).json({ success: true })
+            return response.status(201).json({ success: true })
         } else {
             return response.status(500).json({ success: false })
         }
@@ -45,7 +45,7 @@ router.patch('/', async (request, response) => {
     const { id_rol, name, tenant_id } = request.body
 
     if (!tenant_id || !id_rol) {
-        return response.status(400).json({ 'message': 'El tenant id es requerido' })
+        return response.status(400).json({ success: false })
     }
 
     try {
@@ -65,7 +65,7 @@ router.delete('/:id/:tenant_id', async (request, response) => {
     const tenant_id = Number(request.params.tenant_id)
 
     if (!tenant_id || !id_rol) {
-        return response.status(400)
+        return response.status(400).json({ success: false })
     }
 
     try {

@@ -11,12 +11,8 @@ const router = express.Router()
 router.post('/', async (request, response) => {
     const { name, lastName, email, tel, password, tenant_id } = request.body
     const values = [name, lastName, email, tel, password]
-    if (!name || !lastName || !email || !tel || !password) {
-        return response.status(400).json({ 'message': 'Todos los datos son requeridos' })
-    }
-
-    if (!tenant_id) {
-        return response.status(400).json({ 'message': 'Tenant id es requerido' })
+    if (!name || !lastName || !email || !tel || !password || !tenant_id) {
+        return response.status(400).json({ success: false })
     }
 
     for (const valor of values) {
@@ -27,7 +23,7 @@ router.post('/', async (request, response) => {
 
     try {
         if (await isAlreadyRegister(email)) {
-            return response.status(409).json({ 'message': 'El correo ya se encuentra registrado' })
+            return response.status(409).json({ success: false })
         }
         let { browser } = UAParser(request.headers['user-agent']);
         const hashedPassword = await bcrypt.hash(password, 10)
@@ -58,7 +54,7 @@ router.post('/', async (request, response) => {
         return;
     } catch (e) {
         console.log(e)
-        response.status(500).json({ 'message': 'Error en la base de datos' })
+        response.status(500).json({ success: false })
         return;
     }
 })

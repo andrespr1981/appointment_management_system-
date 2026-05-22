@@ -8,7 +8,7 @@ const router = express.Router()
 router.get('/:id', async (request, response) => {
     const tenant_id = Number(request.params.id)
     if (!tenant_id) {
-        return response.status(400).json({ 'message': 'El tenant id es requerido' })
+        return response.status(400).json({ success: false })
     }
     try {
         const specialists = await getSpecialists(tenant_id)
@@ -30,7 +30,7 @@ router.get('/bySpeciality/:id/:tenant_id', async (request, response) => {
     const id_speciality = Number(request.params.id)
     const tenant_id = Number(request.params.tenant_id)
     if (!tenant_id || !id_speciality) {
-        return response.status(400)
+        return response.status(400).json({ success: false })
     }
     try {
         const specialists = await getSpecialistsBySpeciality(id_speciality, tenant_id)
@@ -99,7 +99,7 @@ router.delete('/:id/:tenant_id', async (request, response) => {
     try {
         const deleted = await deleteSpecialist(id_specialist, tenant_id)
         if (deleted.success) {
-            return response.status(201).json({ success: true })
+            return response.status(200).json({ success: true })
         } else {
             return response.status(500).json({ success: false })
         }

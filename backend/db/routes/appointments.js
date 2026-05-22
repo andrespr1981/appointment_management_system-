@@ -26,6 +26,7 @@ export async function getAppoinmentsByUser(userId, tenant_id) {
         AND c.tenant_id = ?;
         `
         const [appointmens] = await pool.query(query, [userId, tenant_id])
+        await registerConsult('SELECT', 'citas', query)
         return { success: true, appointments: appointmens }
     } catch (e) {
         return { success: false, error: e }
@@ -40,8 +41,11 @@ export async function createAppointment(userId, specialistId, date, time, reason
         (?, ?, ?, ?, ?, 'PROGRAMADA', ?) WHERE tenant_id = ?;`
         //Para la hora fin
         const finish_time = time + 30
-        const [result] = await pool.query(query, [userId, specialistId, date, time, finish_time, reason, tenant_id])
-        return { success: true, appointmentId: result.insertId }
+        const [rows] = await pool.query(query, [userId, specialistId, date, time, finish_time, reason, tenant_id])
+        if (rows.affectedRows > 0) {
+            await registerConsult('INSERT', 'usuarios', query)
+            return { success: true, appointmentId: result.insertId }
+        }
     } catch (e) {
         return { success: false, error: e }
     }
@@ -51,7 +55,11 @@ export async function deleteAppointment(appointmentId) {
     try {
         const query = `UPDATE citas SET estado = 'CANCELADA' where id_cita = ?;`
         const [result] = await pool.query(query, [appointmentId])
-        return { success: true, appointmentId: appointmentId }
+        if (rows.affectedRows > 0) {
+            await registerConsult('UPDATE', 'usuarios', query)
+            return { success: true, appointmentId: appointmentId }
+        }
+        return { success: false }
     } catch (e) {
         return { success: false, error: e }
     }

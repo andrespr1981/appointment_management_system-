@@ -143,6 +143,31 @@ CREATE TABLE refresh_tokens (
     FOREIGN KEY (user_id) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
 );
 
+-- 12. Tabla consultas
+CREATE TABLE consultas (
+    id_auditoria INT AUTO_INCREMENT PRIMARY KEY,
+    tenant_id INT NOT NULL,
+    tipo_operacion ENUM('SELECT', 'INSERT', 'UPDATE', 'DELETE', 'OTHER') NOT NULL,
+    tabla_afectada VARCHAR(100) NOT NULL,
+    query_text TEXT NOT NULL,
+    fecha_ejecucion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tenant_id) REFERENCES tenants(id_tenant) ON DELETE CASCADE
+);
+
+-- 12. Tabla login usuarios
+CREATE TABLE login_usuarios (
+    id_login INT AUTO_INCREMENT PRIMARY KEY,
+    tenant_id INT NOT NULL,
+    id_usuario INT NULL, 
+    correo VARCHAR(150) NOT NULL, 
+    exito BOOLEAN NOT NULL, 
+    dispositivo VARCHAR(100) NULL, 
+    fecha_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tenant_id) REFERENCES tenants(id_tenant) ON DELETE CASCADE,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE SET NULL
+);
+
+
 -- ====================================================
 -- TRIGGERS 
 -- ====================================================
